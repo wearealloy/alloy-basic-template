@@ -1,0 +1,50 @@
+{
+  "name": "alloy-basic-template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "gulp",
+    "build": "gulp build --production",
+    "buildDev": "gulp buildDev"
+  },
+  "browserslist": [
+    "last 2 versions"
+  ],
+  "author": "JSosa Alloy <jsosa@wearealloy.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
+    "autoprefixer": "^9.2.1",
+    "babel-loader": "^8.0.4",
+    "babel-polyfill": "^6.26.0",
+    "browser-sync": "^2.26.3",
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^6.0.0",
+    "gulp-babel": "^8.0.0",
+    "gulp-cache": "^1.0.2",
+    "gulp-clean-css": "^3.10.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-imagemin": "^4.1.0",
+    "gulp-mode": "^1.0.2",
+    "gulp-order": "^1.2.0",
+    "gulp-plumber": "^1.2.0",
+    "gulp-sass": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-twig": "^1.2.0",
+    "gulp-uglify": "^3.0.1",
+    "i": "^0.3.6",
+    "imagemin-mozjpeg": "^7.0.0",
+    "vinyl-named": "^1.1.0",
+    "webpack": "^4.23.1",
+    "webpack-stream": "^5.1.1"
+  },
+  "dependencies": {
+    "foundation-sites": "^6.5.0",
+    "jquery": "^3.3.1",
+    "slick-carousel": "^1.8.1",
+    "what-input": "^5.1.2"
+  }
+}
