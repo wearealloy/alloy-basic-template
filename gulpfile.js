@@ -4,16 +4,18 @@
 
 // VARIABLES 
 
+  // index file name
+  var indexName = 'index' //default index
   // Destination path variables.
     
   var pathToCms = {
-    js: 'dist/web/assets/js',
-    css: 'dist/web/assets/css',
-    media: 'dist/web/media',
-    fonts: 'dist/web/assets/fonts',
-    img: 'dist/web/assets/img',
-    html: 'dist/templates/',
-    indexHtml: 'templates/index.html', // this path has to be in relation to the index.html file found in the dist folder
+    js: 'dist/js',
+    css: 'dist/css',
+    media: 'dist/media',
+    fonts: 'dist/fonts',
+    img: 'dist/media',
+    html: 'dist',
+    indexHtml: `${indexName}.html`, // this path has to be in relation to the index.html file found in the dist folder
     devFiles: 'dist/dev_files'
   }
 
@@ -142,7 +144,7 @@ gulp.task('media', () =>
 );
 
 gulp.task('clean', function(){
- return del.sync(['dist/web/assets/', 'dist/web/media', 'dist/templates', 'dist/dev_files']);
+ return del.sync(['dist']);
 });
 
 gulp.task('cleanDev', function(){
