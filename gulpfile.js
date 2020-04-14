@@ -4,28 +4,29 @@
 
 // VARIABLES 
 
-  // index file name
-  var indexName = 'index' //default index
-  // Destination path variables.
-    
-  var pathToCms = {
-    js: 'dist/js',
-    css: 'dist/css',
-    media: 'dist/media',
-    fonts: 'dist/fonts',
-    img: 'dist/media',
-    html: 'dist',
-    indexHtml: `${indexName}.html`, // this path has to be in relation to the index.html file found in the dist folder
-    devFiles: 'dist/dev_files'
-  }
+// index file name
+var indexName = 'index' //default index
+// Destination path variables.
 
-  //global variables
+var pathToCms = {
+  js: 'dist/js',
+  css: 'dist/css',
+  media: 'dist/media',
+  fonts: 'dist/fonts',
+  img: 'dist/media',
+  html: 'dist',
+  indexHtml: `${indexName}.html`, // this path has to be in relation to the index.html file found in the dist folder
+  devFiles: 'dist/dev_files'
+}
 
-  var vHost = 'vhost url here'; //eg: craft3.tag.test
+//global variables
+
+var vHost = 'vhost url here'; //eg: craft3.tag.test
 
 //*************************************
 
 var gulp = require('gulp');
+const chmod = require('gulp-chmod');
 var sass = require('gulp-sass');
 var plumber = require('gulp-plumber');
 var autoprefixer = require('gulp-autoprefixer');
@@ -49,6 +50,8 @@ var del = require('del');
 const webpack2 = require('webpack');
 const webpackStream = require('webpack-stream');
 const named = require('vinyl-named');
+const rev = require('gulp-rev');
+const revRewrite = require('gulp-rev-rewrite');
 // const webpackConfig = require('./webpack.config.js');
 
 //*************************************
@@ -69,123 +72,129 @@ let webpackConfig = {
   }
 }
 
-gulp.task('scripts', function() {
+gulp.task('scripts', function () {
   return gulp.src('dev/assets/_js/main.js')
     .pipe(plumber())
     .pipe(named())
     .pipe(sourcemaps.init())
-      .pipe(webpackStream(webpackConfig, webpack2))
-      .pipe((mode.production(uglify())))
+    .pipe(webpackStream(webpackConfig, webpack2))
+    .pipe((mode.production(uglify())))
     .pipe(sourcemaps.write())
+    // 
+    .pipe(rev())
     .pipe(gulp.dest(pathToCms.js))
+    .pipe(rev.manifest())
+    .pipe(gulp.dest(pathToCms.js))
+    // 
+    // .pipe(gulp.dest(pathToCms.js))
     .pipe(browserSync.reload({
       stream: true
     }))
 })
 
-gulp.task('copyVendorScripts', function() {
-  return gulp.src('dev/assets/_js/vendor/**/*.js')
-  .pipe(gulp.dest(pathToCms.js + '/vendor'))
+gulp.task('copyScripts', function () {
+  return gulp.src('dev/assets/_js/scripts/**/*.js')
+    .pipe(gulp.dest(pathToCms.js + '/scripts'))
 })
 
 
-gulp.task('templates', function() {
+gulp.task('templates', function () {
   return gulp.src('dev/templates/**/*.html') // run the Twig template parser on all .html files in the "src" directory
-      .pipe(twig())
-      .pipe(gulp.dest(pathToCms.html)) // output the rendered HTML files to the "dist" directory
-      .pipe(browserSync.reload({
+    .pipe(twig())
+    .pipe(gulp.dest(pathToCms.html)) // output the rendered HTML files to the "dist" directory
+    .pipe(browserSync.reload({
       stream: true
     }))
 });
 
-gulp.task('copyHTML', function(){
-  return gulp.src('dev/templates/**/*.html')
-  .pipe(gulp.dest(pathToCms.html))
-  .pipe(browserSync.reload({
-    stream: true
-  }))
+gulp.task('revRewrite', ['sass', 'scripts', 'copyHTML'], function () {
+  console.log('runninr rewrite')
+  const manifest = gulp.src(['dist/css/rev-manifest.json', 'dist/js/rev-manifest.json']);
+
+  return gulp.src('dist/index.html')
+    .pipe(revRewrite({ manifest }))
+    .pipe(gulp.dest(pathToCms.html));
 });
 
-gulp.task('sass', function(){
+gulp.task('copyHTML', function () {
+  return gulp.src('dev/templates/**/*.html')
+    .pipe(gulp.dest(pathToCms.html))
+    .pipe(browserSync.reload({
+      stream: true
+    }))
+});
+
+gulp.task('sass', function () {
+
   return gulp.src('dev/assets/_scss/main.scss')
     .pipe(plumber())
     .pipe(sourcemaps.init())
-      .pipe(sass()) // Using gulp-sass
-      .pipe(autoprefixer())
+    .pipe(sass()) // Using gulp-sass
+    .pipe(autoprefixer())
     .pipe(sourcemaps.write())
     .pipe((mode.production(cleanCSS())))
+    .pipe(rev())
+    .pipe(gulp.dest(pathToCms.css))
+    .pipe(rev.manifest())
     .pipe(gulp.dest(pathToCms.css))
     .pipe(browserSync.reload({
       stream: true
     }))
 });
 
-gulp.task('copyFonts', function(){
+gulp.task('copyFonts', function () {
   return gulp.src('dev/assets/fonts/**/*')
     .pipe(gulp.dest(pathToCms.fonts))
 });
 
 gulp.task('img', () =>
-    gulp.src('dev/assets/img/**/*.+(png|jpg|gif|svg)')
-        .pipe((mode.production(imagemin([imageminMozjpeg(), imagemin.optipng()]))))
-        .pipe(gulp.dest(pathToCms.img))
-        .pipe(browserSync.reload({
-        stream: true
-      }))
+  gulp.src('dev/assets/img/**/*.+(png|jpg|gif|svg)')
+    // .pipe(chmod(777))
+    .pipe(gulp.dest(pathToCms.img))
+    .pipe(browserSync.reload({
+      stream: true
+    }))
 );
 
 gulp.task('media', () =>
-    gulp.src('dev/media/**/*.+(png|jpg|gif|svg)')
-        .pipe((mode.production(imagemin([imageminMozjpeg(), imagemin.optipng()]))))
-        .pipe(gulp.dest(pathToCms.media))
-        .pipe(browserSync.reload({
-        stream: true
-      }))
+  gulp.src('dev/media/**/*.+(png|jpg|gif|svg)')
+    .pipe((mode.production(imagemin([imageminMozjpeg(), imagemin.optipng()]))))
+    .pipe(gulp.dest(pathToCms.media))
+    .pipe(browserSync.reload({
+      stream: true
+    }))
 );
 
-gulp.task('clean', function(){
- return del.sync(['dist']);
+gulp.task('clean', function () {
+  return del.sync(['dist']);
 });
 
-gulp.task('cleanDev', function(){
- return del.sync(['dev']);
+gulp.task('cleanCss', function () {
+  return del.sync(['dist/css/']);
 });
 
-gulp.task('browserSync', function() {
+gulp.task('browserSync', function () {
   browserSync.init({
-       server: {
-        baseDir: './dist',
-        index: pathToCms.indexHtml
-      }
-      // proxy: vHost
+    // baseDir: 'cms',
+    // index: pathToCms.indexHtml
+    proxy: vHost
+    // host: vHost
   });
-});
-
-gulp.task('copyDevFiles', function(){
-  return gulp.src('dev/**/*')
-    .pipe(gulp.dest(pathToCms.devFiles))
-});
-
-
-gulp.task('copyDistFiles', function(){
-  return gulp.src('dist/dev_files/**/*')
-    .pipe(gulp.dest('dev'))
 });
 
 
 // Taks to run on command line
 
-gulp.task('default', ['clean', 'sass', 'scripts', 'copyVendorScripts', 'img', 'media', 'copyFonts', 'templates', 'browserSync'], function(){
-  gulp.watch('dev/assets/_scss/**/*.+(css|scss|sass)', ['sass']);
-  gulp.watch('dev/assets/_js/**/*.js', ['scripts']);
+gulp.task('watch', ['clean', 'sass', 'scripts', 'copyScripts', 'img', 'media', 'copyFonts', 'copyHTML', 'revRewrite', 'browserSync'], function(){
+  gulp.watch('dev/assets/_scss/**/*.+(css|scss|sass)', ['cleanCss','sass', 'copyHTML', 'revRewrite']);
+  gulp.watch('dev/assets/_js/**/*.js', ['scripts', 'copyHTML' , 'revRewrite']);
   gulp.watch('dev/assets/img/**/*.+(png|jpg|gif|svg)', ['img']);
   gulp.watch('dev/assets/fonts/**/*.+(eot|svg|ttf|woff)')
-  gulp.watch('dev/media/**/*.+(png|jpg|gif|svg)', ['media']);
-  gulp.watch('dev/templates/**/*.html', ['templates']);
+  gulp.watch('cms/web/media/**/*.+(png|jpg|gif|svg|mp4)', ['media']);
+  gulp.watch('dev/templates/**/*.html', ['copyHTML', 'revRewrite', 'revRewrite']);
 });
 
-gulp.task('build', ['clean', 'sass', 'scripts', 'copyVendorScripts', 'img', 'media', 'templates', 'copyFonts', 'copyDevFiles']);
+gulp.task('build', ['clean', 'sass', 'scripts', 'copyScripts', 'img', 'media', 'copyHTML', 'copyFonts', 'revRewrite']);
 
-gulp.task('buildDev', ['cleanDev', 'copyDistFiles']);
 
 // http://analyticl.com/blog/frontend-templating-with-gulp-and-twig-js

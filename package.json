@@ -1,6 +1,6 @@
 {
   "name": "alloy-basic-template",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -16,13 +16,13 @@
   "devDependencies": {
     "@babel/core": "^7.1.2",
     "@babel/preset-env": "^7.1.0",
-    "autoprefixer": "^9.2.1",
+    "autoprefixer": "^9.5.1",
     "babel-loader": "^8.0.4",
     "babel-polyfill": "^6.26.0",
     "browser-sync": "^2.26.3",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
-    "gulp-autoprefixer": "^6.0.0",
+    "gulp-autoprefixer": "^6.1.0",
     "gulp-babel": "^8.0.0",
     "gulp-cache": "^1.0.2",
     "gulp-clean-css": "^3.10.0",
@@ -31,6 +31,8 @@
     "gulp-mode": "^1.0.2",
     "gulp-order": "^1.2.0",
     "gulp-plumber": "^1.2.0",
+    "gulp-rev": "^9.0.0",
+    "gulp-rev-rewrite": "^1.1.4",
     "gulp-sass": "^4.0.2",
     "gulp-sourcemaps": "^2.6.4",
     "gulp-twig": "^1.2.0",
@@ -43,6 +45,7 @@
   },
   "dependencies": {
     "foundation-sites": "^6.5.0",
+    "gulp-chmod": "^2.0.0",
     "jquery": "^3.3.1",
     "slick-carousel": "^1.8.1",
     "what-input": "^5.1.2"
